@@ -285,7 +285,7 @@ export function InvoiceGenerator({ initialClientName = '', initialClientAddress 
                 <p className="font-mono text-sm" style={{ color: '#6b7280' }}>#{invoiceNumber}</p>
               </div>
               <div className="text-right">
-                <h2 className="font-bold text-xl" style={{ color: '#111827' }}>M Creation Design</h2>
+                <h2 className="font-bold text-xl" style={{ color: '#111827' }}>M Creation Design App</h2>
                 <p className="text-sm" style={{ color: '#6b7280' }}>Antananarivo, Madagascar</p>
                 <p className="text-sm" style={{ color: '#6b7280' }}>contact@mcreation.mg</p>
               </div>
@@ -346,7 +346,7 @@ export function InvoiceGenerator({ initialClientName = '', initialClientAddress 
 
             <div className="mt-32 pt-8 border-t text-center" style={{ borderColor: '#f3f4f6' }}>
               <p className="text-xs uppercase tracking-widest mb-2" style={{ color: '#9ca3af' }}>Merci pour votre confiance</p>
-              <p className="text-[10px]" style={{ color: '#d1d5db' }}>M Creation Design • SIRET: 123 456 789 00012 • Antananarivo, Madagascar</p>
+              <p className="text-[10px]" style={{ color: '#d1d5db' }}>M Creation Design App • SIRET: 123 456 789 00012 • Antananarivo, Madagascar</p>
             </div>
           </div>
         </div>

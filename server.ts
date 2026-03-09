@@ -42,7 +42,7 @@ async function initDatabase() {
 
   const schema = `
     CREATE TABLE IF NOT EXISTS clients (
-      id INTEGER PRIMARY KEY ${isPostgres ? 'SERIAL' : 'AUTOINCREMENT'},
+      id ${isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT'},
       name TEXT NOT NULL,
       email TEXT,
       phone TEXT,
@@ -52,7 +52,7 @@ async function initDatabase() {
     );
 
     CREATE TABLE IF NOT EXISTS projects (
-      id INTEGER PRIMARY KEY ${isPostgres ? 'SERIAL' : 'AUTOINCREMENT'},
+      id ${isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT'},
       client_id INTEGER REFERENCES clients(id),
       brand_name TEXT,
       slogan TEXT,
@@ -72,7 +72,7 @@ async function initDatabase() {
     );
 
     CREATE TABLE IF NOT EXISTS transactions (
-      id INTEGER PRIMARY KEY ${isPostgres ? 'SERIAL' : 'AUTOINCREMENT'},
+      id ${isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT'},
       type TEXT NOT NULL,
       amount NUMERIC NOT NULL,
       description TEXT,
@@ -159,7 +159,7 @@ async function startServer() {
       const clientResult = await query(`
         INSERT INTO clients (name, email, phone, other_contact, address)
         VALUES ($1, $2, $3, $4, $5)
-        RETURNING id
+        ${isPostgres ? 'RETURNING id' : ''}
       `, [
         formData.clientName || formData.brandName,
         formData.email,

@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
 import { BriefForm } from './components/Form';
 import { ThankYou } from './components/ThankYou';
 import { FormData, initialFormData } from './types';
-import { Sparkles, ChevronDown } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { analyzeBrief } from './services/ai';
 
 const AdminDashboard = lazy(() => import('./components/AdminDashboard').then(module => ({ default: module.AdminDashboard })));
@@ -62,10 +62,10 @@ function ClientApp() {
       <header className="bg-white border-b border-gray-100 sticky top-0 z-50 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="bg-black text-white p-1.5 rounded-lg">
-              <Sparkles className="w-5 h-5" />
+            <div className="bg-black text-white p-1 rounded-lg overflow-hidden">
+              <img src="/logo.svg" alt="Logo" className="w-6 h-6" referrerPolicy="no-referrer" />
             </div>
-            <span className="font-bold text-base md:text-lg tracking-tight truncate max-w-[150px] md:max-w-none">M Creation Design</span>
+            <span className="font-bold text-base md:text-lg tracking-tight truncate max-w-[150px] md:max-w-none">M Creation Design App</span>
           </div>
           <div className="text-xs md:text-sm text-gray-500 font-medium bg-gray-50 px-3 py-1 rounded-full">
             Brief Créatif
@@ -101,13 +101,13 @@ function ClientApp() {
       <footer className="bg-white border-t border-gray-100 py-8 md:py-12 mt-20 print:hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-2 grayscale opacity-50">
-            <div className="bg-black text-white p-1 rounded-md">
-              <Sparkles className="w-4 h-4" />
+            <div className="bg-black text-white p-1 rounded-md overflow-hidden">
+              <img src="/logo.svg" alt="Logo" className="w-5 h-5" referrerPolicy="no-referrer" />
             </div>
-            <span className="font-bold text-sm tracking-tight">M Creation Design</span>
+            <span className="font-bold text-sm tracking-tight">M Creation Design App</span>
           </div>
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8 text-center md:text-left">
-            <span className="text-xs md:text-sm text-gray-400">© 2026 M Creation Design. Tous droits réservés.</span>
+            <span className="text-xs md:text-sm text-gray-400">© 2026 M Creation Design App. Tous droits réservés.</span>
             <button 
               onClick={() => setShowPinModal(true)}
               className="text-[10px] md:text-xs font-semibold text-gray-400 hover:text-indigo-600 transition-colors uppercase tracking-widest border border-gray-200 px-4 py-2 rounded-full hover:border-indigo-100"
@@ -134,8 +134,8 @@ function ClientApp() {
               </svg>
             </button>
             <div className="text-center mb-6">
-              <div className="bg-black text-white p-3 rounded-xl inline-block mb-4">
-                <Sparkles className="w-6 h-6" />
+              <div className="bg-black text-white p-2 rounded-xl inline-block mb-4 overflow-hidden">
+                <img src="/logo.svg" alt="Logo" className="w-8 h-8" referrerPolicy="no-referrer" />
               </div>
               <h2 className="text-xl font-bold text-gray-900">Accès Sécurisé</h2>
               <p className="text-sm text-gray-500 mt-2">Saisissez votre code PIN pour accéder à l'administration.</p>
@@ -206,8 +206,8 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-8">
         <div className="text-center mb-6 md:mb-8">
-          <div className="bg-black text-white p-3 rounded-xl inline-block mb-4">
-            <Sparkles className="w-6 h-6" />
+          <div className="bg-black text-white p-2 rounded-xl inline-block mb-4 overflow-hidden">
+            <img src="/logo.svg" alt="Logo" className="w-8 h-8" referrerPolicy="no-referrer" />
           </div>
           <h2 className="text-xl md:text-2xl font-bold text-gray-900">Accès Sécurisé</h2>
           <p className="text-sm md:text-base text-gray-500 mt-2">Veuillez saisir votre code PIN pour accéder au tableau de bord.</p>

@@ -38,9 +38,9 @@ export function AdminDashboard() {
 
       // Browser notification
       if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('M Creation Design', {
+        new Notification('M Creation Design App', {
           body: message,
-          icon: 'https://picsum.photos/id/1/192/192'
+          icon: '/logo.svg'
         });
       }
     });
