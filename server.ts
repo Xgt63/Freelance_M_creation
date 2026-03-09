@@ -6,6 +6,7 @@ import pg from 'pg';
 import sqlite3 from 'sqlite3';
 import dotenv from 'dotenv';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -299,18 +300,22 @@ async function startServer() {
     }
   });
 
-  // Vite middleware for development
-  if (process.env.NODE_ENV !== 'production') {
+  // Vite middleware for development or fallback
+  const isProduction = process.env.NODE_ENV === 'production';
+  const distPath = path.join(__dirname, 'dist');
+  const isDistExists = fs.existsSync(distPath);
+
+  if (isProduction && isDistExists) {
+    app.use(express.static(distPath));
+    app.get('*', (req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
+  } else {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    app.use(express.static(path.join(__dirname, 'dist')));
-    app.get('*', (req, res) => {
-      res.sendFile(path.join(__dirname, 'dist', 'index.html'));
-    });
   }
 
   httpServer.listen(Number(PORT), '0.0.0.0', () => {
