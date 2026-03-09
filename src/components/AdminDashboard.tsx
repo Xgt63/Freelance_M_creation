@@ -20,7 +20,8 @@ export function AdminDashboard() {
   const [invoicingProject, setInvoicingProject] = useState<any>(null);
 
   useEffect(() => {
-    fetchData();
+    let isMounted = true;
+    fetchData(isMounted);
 
     // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
@@ -30,11 +31,12 @@ export function AdminDashboard() {
     // Connect to Socket.io
     const socket = io();
     socket.on('new_project', (project) => {
+      if (!isMounted) return;
       const message = `Nouveau projet: ${project.brandName} par ${project.clientName}`;
       setNotifications(prev => [message, ...prev]);
       
       // Refresh data
-      fetchData();
+      fetchData(isMounted);
 
       // Browser notification
       if ('Notification' in window && Notification.permission === 'granted') {
@@ -46,11 +48,12 @@ export function AdminDashboard() {
     });
 
     return () => {
+      isMounted = false;
       socket.disconnect();
     };
   }, []);
 
-  const fetchData = async () => {
+  const fetchData = async (isMounted: boolean = true) => {
     try {
       const pin = localStorage.getItem('admin_pin') || '';
       const res = await fetch('/api/admin/data', {
@@ -60,7 +63,7 @@ export function AdminDashboard() {
       if (!res.ok) {
         if (res.status === 401) {
           localStorage.removeItem('admin_pin');
-          window.location.reload();
+          if (isMounted) window.location.reload();
         }
         throw new Error(`Erreur ${res.status}: ${res.statusText}`);
       }
@@ -73,12 +76,16 @@ export function AdminDashboard() {
       }
 
       const json = await res.json();
-      setData(json);
-      setLoading(false);
+      if (isMounted) {
+        setData(json);
+        setLoading(false);
+      }
     } catch (err: any) {
       console.error('Erreur fetchData:', err);
-      setError(err.message);
-      setLoading(false);
+      if (isMounted) {
+        setError(err.message);
+        setLoading(false);
+      }
     }
   };
 
@@ -264,7 +271,7 @@ export function AdminDashboard() {
                             <FileText className="w-4 h-4 md:w-5 md:h-5" />
                           </button>
                           <div className={`px-2 md:px-3 py-1 rounded-full text-[10px] md:text-xs font-medium ${project.ai_score >= 80 ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}`}>
-                            {project.ai_score}%
+                            <span>{project.ai_score}%</span>
                           </div>
                         </div>
                         {isExpanded ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
@@ -329,19 +336,19 @@ export function AdminDashboard() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
               <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div className="text-xs md:text-sm font-medium text-gray-500 mb-2">Revenus Encaissés</div>
-                <div className="text-xl md:text-2xl font-bold text-emerald-600">{totalRevenus.toLocaleString()} Ar</div>
+                <div className="text-xl md:text-2xl font-bold text-emerald-600"><span>{totalRevenus.toLocaleString()} Ar</span></div>
               </div>
               <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div className="text-xs md:text-sm font-medium text-gray-500 mb-2">En attente</div>
-                <div className="text-xl md:text-2xl font-bold text-amber-600">{totalEnAttente.toLocaleString()} Ar</div>
+                <div className="text-xl md:text-2xl font-bold text-amber-600"><span>{totalEnAttente.toLocaleString()} Ar</span></div>
               </div>
               <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div className="text-xs md:text-sm font-medium text-gray-500 mb-2">Dépenses Totales</div>
-                <div className="text-xl md:text-2xl font-bold text-rose-600">{totalDepenses.toLocaleString()} Ar</div>
+                <div className="text-xl md:text-2xl font-bold text-rose-600"><span>{totalDepenses.toLocaleString()} Ar</span></div>
               </div>
               <div className="bg-white p-5 md:p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <div className="text-xs md:text-sm font-medium text-gray-500 mb-2">Bénéfice Net</div>
-                <div className="text-xl md:text-2xl font-bold text-gray-900">{(totalRevenus - totalDepenses).toLocaleString()} Ar</div>
+                <div className="text-xl md:text-2xl font-bold text-gray-900"><span>{(totalRevenus - totalDepenses).toLocaleString()} Ar</span></div>
               </div>
             </div>
 

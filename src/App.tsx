@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import { BriefForm } from './components/Form';
 import { ThankYou } from './components/ThankYou';
 import { FormData, initialFormData } from './types';
@@ -68,7 +69,7 @@ function ClientApp() {
             <span className="font-bold text-base md:text-lg tracking-tight truncate max-w-[150px] md:max-w-none">M Creation Design App</span>
           </div>
           <div className="text-xs md:text-sm text-gray-500 font-medium bg-gray-50 px-3 py-1 rounded-full">
-            Brief Créatif
+            <span>Brief Créatif</span>
           </div>
         </div>
       </header>
@@ -118,52 +119,64 @@ function ClientApp() {
         </div>
       </footer>
 
-      {showPinModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 w-full max-w-sm relative animate-in fade-in zoom-in duration-200">
-            <button 
-              onClick={() => {
-                setShowPinModal(false);
-                setPin('');
-                setPinError(false);
-              }}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+      <AnimatePresence>
+        {showPinModal && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 w-full max-w-sm relative"
             >
-              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <div className="text-center mb-6">
-              <div className="bg-black text-white p-2 rounded-xl inline-block mb-4 overflow-hidden">
-                <img src="/logo.svg" alt="Logo" className="w-8 h-8" referrerPolicy="no-referrer" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900">Accès Sécurisé</h2>
-              <p className="text-sm text-gray-500 mt-2">Saisissez votre code PIN pour accéder à l'administration.</p>
-            </div>
-            <form onSubmit={handleAdminAccess} className="space-y-4">
-              <div>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  pattern="[0-9]*"
-                  value={pin}
-                  onChange={(e) => setPin(e.target.value)}
-                  placeholder="Code PIN"
-                  className={`w-full px-4 py-3 rounded-xl border ${pinError ? 'border-red-300 bg-red-50' : 'border-gray-200'} focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-center text-2xl tracking-widest`}
-                  autoFocus
-                />
-                {pinError && <p className="text-red-500 text-xs mt-2 text-center">Code PIN incorrect.</p>}
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-black text-white py-3.5 rounded-xl font-semibold hover:bg-gray-900 transition-all active:scale-[0.98]"
+              <button 
+                onClick={() => {
+                  setShowPinModal(false);
+                  setPin('');
+                  setPinError(false);
+                }}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
               >
-                Déverrouiller
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
-            </form>
-          </div>
-        </div>
-      )}
+              <div className="text-center mb-6">
+                <div className="bg-black text-white p-2 rounded-xl inline-block mb-4 overflow-hidden">
+                  <img src="/logo.svg" alt="Logo" className="w-8 h-8" referrerPolicy="no-referrer" />
+                </div>
+                <h2 className="text-xl font-bold text-gray-900">Accès Sécurisé</h2>
+                <p className="text-sm text-gray-500 mt-2">Saisissez votre code PIN pour accéder à l'administration.</p>
+              </div>
+              <form onSubmit={handleAdminAccess} className="space-y-4">
+                <div>
+                  <input
+                    type="password"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    placeholder="Code PIN"
+                    className={`w-full px-4 py-3 rounded-xl border ${pinError ? 'border-red-300 bg-red-50' : 'border-gray-200'} focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-center text-2xl tracking-widest`}
+                    autoFocus
+                  />
+                  {pinError && <p className="text-red-500 text-xs mt-2 text-center">Code PIN incorrect.</p>}
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-black text-white py-3.5 rounded-xl font-semibold hover:bg-gray-900 transition-all active:scale-[0.98]"
+                >
+                  Déverrouiller
+                </button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -246,7 +259,7 @@ export default function App() {
         <Route path="/merci" element={<ThankYou />} />
         <Route path="/admin" element={
           <AdminGuard>
-            <Suspense fallback={
+            <Suspense key="admin-suspense" fallback={
               <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50">
                 <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mb-4" />
                 <p className="text-gray-500 font-medium">Chargement du tableau de bord...</p>
