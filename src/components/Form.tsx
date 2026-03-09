@@ -12,17 +12,6 @@ interface FormProps {
 
 const SERVICE_TYPES = ['Logo', 'Affiche', 'Flyer', 'Identité visuelle', 'Réseaux sociaux', 'Autre'];
 
-const GRAPHIC_STYLES = [
-  { id: 'Minimaliste', label: 'Minimaliste', image: 'https://picsum.photos/seed/minimalist_architecture/400/300' },
-  { id: 'Épuré', label: 'Épuré', image: 'https://picsum.photos/seed/white_interior/400/300' },
-  { id: 'Summer', label: 'Summer', image: 'https://picsum.photos/seed/tropical_beach/400/300' },
-  { id: 'Party', label: 'Party', image: 'https://picsum.photos/seed/neon_party/400/300' },
-  { id: 'Corporate', label: 'Corporate', image: 'https://picsum.photos/seed/business_office/400/300' },
-  { id: 'Luxe', label: 'Luxe', image: 'https://picsum.photos/seed/luxury_watch/400/300' },
-  { id: 'Moderne', label: 'Moderne', image: 'https://picsum.photos/seed/modern_abstract/400/300' },
-  { id: 'Vintage', label: 'Vintage', image: 'https://picsum.photos/seed/vintage_car/400/300' },
-];
-
 const TYPOGRAPHIES = [
   { id: 'Serif', label: 'Serif', desc: 'Classique, Élégant', class: 'font-["Playfair_Display",_serif]' },
   { id: 'Sans serif', label: 'Sans serif', desc: 'Moderne, Épuré', class: 'font-sans' },
@@ -45,7 +34,21 @@ const PREDEFINED_COLORS = [
 
 export function BriefForm({ formData, setFormData, onSubmit, isSubmitting }: FormProps) {
   const [step, setStep] = useState(1);
+  const [graphicStyles, setGraphicStyles] = useState<{ id: string, label: string, image: string }[]>([]);
   const totalSteps = 3;
+
+  React.useEffect(() => {
+    fetch('/api/graphic-styles')
+      .then(res => res.json())
+      .then(data => {
+        setGraphicStyles(data.map((s: any) => ({
+          id: s.name,
+          label: s.name,
+          image: s.image_url
+        })));
+      })
+      .catch(err => console.error('Error fetching styles:', err));
+  }, []);
 
   const handleNext = () => setStep((s) => Math.min(s + 1, totalSteps));
   const handlePrev = () => setStep((s) => Math.max(s - 1, 1));
@@ -260,7 +263,7 @@ export function BriefForm({ formData, setFormData, onSubmit, isSubmitting }: For
             <div className="space-y-3">
               <label className="text-sm font-medium text-gray-700">Style graphique recherché</label>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                {GRAPHIC_STYLES.map((style) => (
+                {graphicStyles.map((style) => (
                   <button
                     key={style.id}
                     type="button"

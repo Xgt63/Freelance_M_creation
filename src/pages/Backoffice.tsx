@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Users, Briefcase, TrendingUp, Sparkles, Plus, Search, Filter, AlertCircle, DollarSign, ArrowUpRight, ArrowDownRight, Calendar } from 'lucide-react';
+import { Users, Briefcase, TrendingUp, Sparkles, Plus, Search, Filter, AlertCircle, DollarSign, ArrowUpRight, ArrowDownRight, Calendar, Image as ImageIcon, Upload } from 'lucide-react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { ResultView } from '../components/Result';
 
 export default function Backoffice() {
-  const [data, setData] = useState<any>({ clients: [], projects: [], transactions: [] });
+  const [data, setData] = useState<any>({ clients: [], projects: [], transactions: [], styles: [] });
   const [insights, setInsights] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'clients' | 'projects' | 'finance'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'clients' | 'projects' | 'finance' | 'styles'>('dashboard');
   const [selectedProject, setSelectedProject] = useState<any>(null);
 
   useEffect(() => {
@@ -40,7 +40,12 @@ export default function Backoffice() {
       }
 
       const json = await res.json();
-      setData(json);
+      
+      // Fetch graphic styles
+      const stylesRes = await fetch('/api/graphic-styles');
+      const styles = await stylesRes.json();
+      
+      setData({ ...json, styles });
     } catch (err: any) {
       console.error('Erreur fetchData:', err);
       setError(err.message);
@@ -131,6 +136,50 @@ export default function Backoffice() {
     }
   };
 
+  const handleImageUpload = async (styleId: number, file: File) => {
+    // 1. Validate size (max 500KB)
+    const maxSize = 500 * 1024;
+    if (file.size > maxSize) {
+      alert(`L'image est trop lourde (${(file.size / 1024).toFixed(0)}KB). Le maximum est de 500KB pour ne pas saturer le site.`);
+      return;
+    }
+
+    // 2. Validate dimensions (optional but good for UX)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = async () => {
+        // Check dimensions if needed, but here we just show them
+        console.log(`Dimensions: ${img.width}x${img.height}`);
+        
+        // 3. Convert to base64 and send to server
+        const base64 = e.target?.result as string;
+        try {
+          const pin = localStorage.getItem('admin_pin') || '';
+          const res = await fetch(`/api/admin/graphic-styles/${styleId}`, {
+            method: 'POST',
+            headers: { 
+              'Content-Type': 'application/json',
+              'x-admin-pin': pin
+            },
+            body: JSON.stringify({ image_url: base64 })
+          });
+          
+          if (res.ok) {
+            fetchData(); // Refresh styles
+          } else {
+            alert("Erreur lors de la mise à jour de l'image.");
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Erreur de connexion au serveur.");
+        }
+      };
+      img.src = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  };
+
   const openInvoiceFromProject = (project: any) => {
     const client = data.clients.find((c: any) => c.id === project.client_id);
     setInvoiceForm({
@@ -183,6 +232,7 @@ export default function Backoffice() {
             { id: 'clients', icon: Users, label: 'Clients' },
             { id: 'projects', icon: Briefcase, label: 'Projets' },
             { id: 'finance', icon: DollarSign, label: 'Finances' },
+            { id: 'styles', icon: ImageIcon, label: 'Styles Graphiques' },
           ].map((item) => (
             <button
               key={item.id}
@@ -578,6 +628,45 @@ export default function Backoffice() {
                   </div>
                 </form>
               </motion.div>
+            </div>
+          )}
+
+          {/* Styles Tab */}
+          {activeTab === 'styles' && (
+            <div className="space-y-8">
+              <div className="flex justify-between items-center">
+                <h1 className="text-3xl font-bold text-gray-900">Styles Graphiques</h1>
+                <p className="text-sm text-gray-500">Gérez les images d'illustration pour le formulaire client.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {data.styles.map((style: any) => (
+                  <div key={style.id} className="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm flex flex-col">
+                    <div className="aspect-[4/3] relative group">
+                      <img src={style.image_url} alt={style.name} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <label className="cursor-pointer bg-white text-black px-4 py-2 rounded-xl font-medium flex items-center gap-2 hover:bg-gray-100">
+                          <Upload className="w-4 h-4" />
+                          Changer l'image
+                          <input 
+                            type="file" 
+                            className="hidden" 
+                            accept="image/*"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleImageUpload(style.id, file);
+                            }}
+                          />
+                        </label>
+                      </div>
+                    </div>
+                    <div className="p-4 border-t border-gray-100">
+                      <h3 className="font-bold text-gray-900">{style.name}</h3>
+                      <p className="text-xs text-gray-500 mt-1">Recommandé : 400x300px, max 500KB</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

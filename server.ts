@@ -79,6 +79,12 @@ async function initDatabase() {
       status TEXT DEFAULT 'paid',
       date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
+
+    CREATE TABLE IF NOT EXISTS graphic_styles (
+      id ${isPostgres ? 'SERIAL PRIMARY KEY' : 'INTEGER PRIMARY KEY AUTOINCREMENT'},
+      name TEXT NOT NULL,
+      image_url TEXT NOT NULL
+    );
   `;
 
   try {
@@ -91,6 +97,27 @@ async function initDatabase() {
       }
     }
     console.log('Database tables initialized');
+
+    // Initialize default graphic styles if empty
+    const stylesResult = await query('SELECT COUNT(*) as count FROM graphic_styles');
+    const count = isPostgres ? parseInt(stylesResult.rows[0].count) : stylesResult.rows[0].count;
+    
+    if (count === 0) {
+      const defaultStyles = [
+        { name: 'Minimaliste', image: 'https://picsum.photos/seed/minimalist_architecture/400/300' },
+        { name: 'Épuré', image: 'https://picsum.photos/seed/white_interior/400/300' },
+        { name: 'Summer', image: 'https://picsum.photos/seed/tropical_beach/400/300' },
+        { name: 'Party', image: 'https://picsum.photos/seed/neon_party/400/300' },
+        { name: 'Corporate', image: 'https://picsum.photos/seed/business_office/400/300' },
+        { name: 'Luxe', image: 'https://picsum.photos/seed/luxury_watch/400/300' },
+        { name: 'Moderne', image: 'https://picsum.photos/seed/modern_abstract/400/300' },
+        { name: 'Vintage', image: 'https://picsum.photos/seed/vintage_car/400/300' },
+      ];
+      for (const style of defaultStyles) {
+        await query('INSERT INTO graphic_styles (name, image_url) VALUES ($1, $2)', [style.name, style.image]);
+      }
+      console.log('Default graphic styles initialized');
+    }
   } catch (err) {
     console.error('Error initializing database tables:', err);
   }
@@ -148,6 +175,16 @@ async function startServer() {
 
   app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  });
+
+  app.get('/api/graphic-styles', async (req, res) => {
+    try {
+      const result = await query('SELECT * FROM graphic_styles ORDER BY id ASC');
+      res.json(result.rows);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
   });
 
   // API Routes
@@ -243,6 +280,18 @@ async function startServer() {
         'INSERT INTO transactions (type, amount, description, date, status) VALUES ($1, $2, $3, $4, $5)',
         [type, amount, description, date || new Date().toISOString(), status || 'paid']
       );
+      res.json({ success: true });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  app.post('/api/admin/graphic-styles/:id', adminAuth, async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { image_url } = req.body;
+      await query('UPDATE graphic_styles SET image_url = $1 WHERE id = $2', [image_url, id]);
       res.json({ success: true });
     } catch (error) {
       console.error(error);
