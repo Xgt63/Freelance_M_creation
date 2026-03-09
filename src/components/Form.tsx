@@ -13,14 +13,14 @@ interface FormProps {
 const SERVICE_TYPES = ['Logo', 'Affiche', 'Flyer', 'Identité visuelle', 'Réseaux sociaux', 'Autre'];
 
 const GRAPHIC_STYLES = [
-  { id: 'Minimaliste', label: 'Minimaliste', image: 'https://picsum.photos/seed/minimalist_design/400/300?blur=2' },
-  { id: 'Épuré', label: 'Épuré', image: 'https://picsum.photos/seed/clean_design/400/300' },
-  { id: 'Summer', label: 'Summer', image: 'https://picsum.photos/seed/summer_vibes/400/300' },
-  { id: 'Party', label: 'Party', image: 'https://picsum.photos/seed/party_neon/400/300' },
-  { id: 'Corporate', label: 'Corporate', image: 'https://picsum.photos/seed/corporate_business/400/300' },
-  { id: 'Luxe', label: 'Luxe', image: 'https://picsum.photos/seed/luxury_gold/400/300' },
-  { id: 'Moderne', label: 'Moderne', image: 'https://picsum.photos/seed/modern_art/400/300' },
-  { id: 'Vintage', label: 'Vintage', image: 'https://picsum.photos/seed/vintage_retro/400/300' },
+  { id: 'Minimaliste', label: 'Minimaliste', image: 'https://picsum.photos/seed/minimalist_architecture/400/300' },
+  { id: 'Épuré', label: 'Épuré', image: 'https://picsum.photos/seed/white_interior/400/300' },
+  { id: 'Summer', label: 'Summer', image: 'https://picsum.photos/seed/tropical_beach/400/300' },
+  { id: 'Party', label: 'Party', image: 'https://picsum.photos/seed/neon_party/400/300' },
+  { id: 'Corporate', label: 'Corporate', image: 'https://picsum.photos/seed/business_office/400/300' },
+  { id: 'Luxe', label: 'Luxe', image: 'https://picsum.photos/seed/luxury_watch/400/300' },
+  { id: 'Moderne', label: 'Moderne', image: 'https://picsum.photos/seed/modern_abstract/400/300' },
+  { id: 'Vintage', label: 'Vintage', image: 'https://picsum.photos/seed/vintage_car/400/300' },
 ];
 
 const TYPOGRAPHIES = [
