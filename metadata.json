@@ -1,0 +1,5 @@
+{
+  "name": "M Creation Design - Freelance OS",
+  "description": "App Web (PWA) de gestion de projets créatifs avec notifications en temps réel et analyse IA.",
+  "requestFramePermissions": ["notifications"]
+}
